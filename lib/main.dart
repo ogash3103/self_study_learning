@@ -28,7 +28,9 @@ class _LoginPageState extends State<LoginPage> {
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final nameController = TextEditingController();
 
+  final nameFocus = FocusNode();
   final emailFocus = FocusNode();
   final passwordFocus = FocusNode();
 
@@ -38,19 +40,21 @@ class _LoginPageState extends State<LoginPage> {
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
+    nameController.dispose();
+    nameFocus.dispose();
     emailFocus.dispose();
     passwordFocus.dispose();
     super.dispose();
   }
 
-  void login() {
+  void signUp() {
     FocusScope.of(context).unfocus();
 
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            "Email: ${emailController.text}\nParol: ${passwordController.text}",
+            "Email: ${emailController.text}\nParol: ${passwordController.text}\nParol: ${nameController.text}",
           ),
         ),
       );
@@ -58,50 +62,60 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   InputDecoration buildInputDecoration({
-    required String label,
-    required IconData icon,
+    required String? label,
     Widget? suffixIcon,
   }) {
-    return InputDecoration(
-      labelText: label,
-      prefixIcon: Icon(icon),
-      suffixIcon: suffixIcon,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-      ),
-    );
+    return InputDecoration(labelText: label, suffixIcon: suffixIcon);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Login Form")),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(30),
             child: Form(
               key: _formKey,
               child: Column(
                 children: [
                   const Text(
-                    "Xush kelibsiz",
+                    "Instagram",
                     style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 40,
+                      letterSpacing: 2,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 24),
+                  // name
+                  TextFormField(
+                    controller: nameController,
+                    focusNode: nameFocus,
+                    keyboardType: TextInputType.name,
+                    textInputAction: TextInputAction.next,
 
+                    decoration: buildInputDecoration(label: "Name"),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Ismingizni kiriting";
+                      }
+
+                      return null;
+                    },
+                    onFieldSubmitted: (_) {
+                      FocusScope.of(context).requestFocus(emailFocus);
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  // email
                   TextFormField(
                     controller: emailController,
                     focusNode: emailFocus,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
-                    decoration: buildInputDecoration(
-                      label: "Email",
-                      icon: Icons.email_outlined,
-                    ),
+
+                    decoration: buildInputDecoration(label: "Email"),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return "Email kiriting";
@@ -116,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
                     },
                   ),
                   const SizedBox(height: 16),
-
+                  // password
                   TextFormField(
                     controller: passwordController,
                     focusNode: passwordFocus,
@@ -124,7 +138,6 @@ class _LoginPageState extends State<LoginPage> {
                     textInputAction: TextInputAction.done,
                     decoration: buildInputDecoration(
                       label: "Parol",
-                      icon: Icons.lock_outline,
                       suffixIcon: IconButton(
                         onPressed: () {
                           setState(() {
@@ -147,18 +160,44 @@ class _LoginPageState extends State<LoginPage> {
                       }
                       return null;
                     },
-                    onFieldSubmitted: (_) => login(),
+                    onFieldSubmitted: (_) => signUp(),
                   ),
                   const SizedBox(height: 24),
-
+                  // button
                   SizedBox(
                     width: double.infinity,
-                    height: 52,
+                    height: 40,
                     child: ElevatedButton(
-                      onPressed: login,
-                      child: const Text("Kirish"),
+                      onPressed: signUp,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                      child: const Text(
+                        "Sign Up",
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
                     ),
                   ),
+                  SizedBox(height: 30),
+                  // LogIn page
+
+                     Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Already have an account?",
+                          style: TextStyle(fontSize: 12, color: Colors.black87),
+                        ),
+                        SizedBox(width: 12),
+                        Text("Log In",
+                          style: TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),
